@@ -9,5 +9,5 @@ package com.zren.platform.biz.action.enums;
 public enum  RobotEnum {
 
     ROBOT,
-    PLAYER;
+    PLAYER
 }

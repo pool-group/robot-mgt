@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 @Repository
-public interface RobotClearSnapRepository extends JpaRepository<RobotClearSnapInfoPO, Long> {
+public interface RobotClearSnapRepository extends JpaRepository<RobotClearSnapInfoPO, Integer> {
 
 
 }

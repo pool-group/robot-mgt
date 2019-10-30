@@ -27,4 +27,7 @@ public class RuleInputModelDTO {
 
     /**机器人ID*/
     private List<Long> userIdlist;
+
+    /**玩家ID*/
+    private List<Long> playerlist;
 }

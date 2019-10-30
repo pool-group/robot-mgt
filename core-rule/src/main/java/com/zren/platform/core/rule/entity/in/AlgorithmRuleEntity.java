@@ -39,6 +39,23 @@ public class AlgorithmRuleEntity {
     /**RTP状态 开启：1  关闭：2*/
     private Byte rtpAble;
 
+    private Byte grayAble;
+
+    private BigDecimal denyPipAmount;
+    private BigDecimal positiveGrayRate;
+    private Integer positiveGrayTime;
+    private BigDecimal positiveTotalbetAlarm;
+    private BigDecimal reverseGrayRate;
+    private Integer reverseGrayTime;
+    private BigDecimal reverseTotalbetAlarm;
+    private List<Long> playerlist;
+
+    private BigDecimal reverseStage;
+    private BigDecimal reverseRate;
+    private BigDecimal difference;
+
+    private Boolean bool;
+
     /**实际RTP值*/
     private BigDecimal realRtpValue;
 
@@ -49,7 +66,7 @@ public class AlgorithmRuleEntity {
     private BigDecimal rtpCheatInit;
 
     /**RTP当前作弊几率*/
-    private BigDecimal rtpCurrentCheat;
+    private BigDecimal rtpCurrentCheat=BigDecimal.ZERO;
 
     /**RTP递增梯度值 公式：当实际RTP≥预设RTP, 作弊几率R=50%+△r1(t1)+△r1(t2)+…+△r1(tn)，△r1=0.5%*/
     private BigDecimal rtpIncrease;

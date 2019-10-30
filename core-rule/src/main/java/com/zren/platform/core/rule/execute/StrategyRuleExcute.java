@@ -84,13 +84,13 @@ public class StrategyRuleExcute implements AIStrategyRuleProcess {
         String key=null;
         try {
             key=analysisKey(zse);
-            ZjhStrategyPO po=zJHAIStrategyFactory.initAIActionOriginal(key,false);
+            ZjhStrategyPO po=zJHAIStrategyFactory.initAIActionOriginal(key,false,zse);
             analysisResult(zse,po,out);
         } catch (Exception e) {
             if(e instanceof CronstrRuleException){
                 try {
                     LogUtil.warn(String.format("analysis this cron string rule message is Exceptions, start use availability container.."));
-                    ZjhStrategyPO po=zJHAIStrategyFactory.initAIActionOriginal(key,true);
+                    ZjhStrategyPO po=zJHAIStrategyFactory.initAIActionOriginal(key,true,zse);
                     analysisResult(zse,po,out);
                 } catch (Exception e1) {
                     if(e1 instanceof CronstrRuleException){

@@ -28,11 +28,20 @@ public class ZJHPlayerContext {
     /**前一个操作人ID*/
     private String beforPlayerId;
 
+    private String realPlayerId;
+
+    private String target;
+
+    private Double playerTotalBetScore;
+
     /**前一个下注分数*/
     private Double lastBetScore;
 
     /**当前操作人ID*/
     private String currentId;
+
+    /**当前机器人是否加注*/
+    private boolean currentIsAddbet=false;
 
     /**当前机器人是否看过牌*/
     private boolean currentIsLooked;
@@ -139,8 +148,14 @@ public class ZJHPlayerContext {
     /**消息码*/
     private Integer code;
 
-    /**平台名称*/
+    /**平台*/
     private String brand;
+
+    /**游戏ID*/
+    private Integer gameId;
+
+    /**房间ID*/
+    private Integer roomId;
 
     /**agentId*/
     private Long agentId;
@@ -163,7 +178,7 @@ public class ZJHPlayerContext {
     public void setToIsAddBet(List<Map<String, Object>> playerList) {
         Double d1 = null,d2=null,d3=null,d4=null;
         for(Map map:playerList){
-            if(!map.get("userId").equals(this.getCurrentId())&&("WAIT".equals(map.get("state"))||"THINKING".equals(map.get("state")))){
+            if(!map.get("userId").equals(this.getCurrentId())&&("WAIT".equals(map.get("state"))||"THINKING".equals(map.get("state"))||"START".equals(map.get("state")))){
                 if((Boolean) map.get("isLookedBeforeBet")&&(Boolean) map.get("isAddBet")){
                     d1=null==d1?Double.valueOf(map.get("lastBet").toString()):d1.compareTo(Double.valueOf(map.get("lastBet").toString()))==-1?Double.valueOf(map.get("lastBet").toString()):d1;
                 }else if((Boolean) map.get("isLookedBeforeBet")&&!(Boolean) map.get("isAddBet")){

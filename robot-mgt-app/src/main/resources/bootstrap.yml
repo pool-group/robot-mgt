@@ -3,14 +3,14 @@ spring:
     name: robot-mgt
   cloud:
     consul:
-      host: 192.168.1.173
+      host: 192.168.211.235
 #      host: localhost
       port: 8500
       discovery:
         prefer-ip-address: true
         healthCheckInterval: 10s
-        ip-address: 192.168.11.117
-        health-check-url: http://192.168.11.117:8889/actuator/health
+        ip-address: 192.168.11.116
+#        health-check-url: http://192.168.11.116:8889/actuator/health
 server:
   port: 8889
 

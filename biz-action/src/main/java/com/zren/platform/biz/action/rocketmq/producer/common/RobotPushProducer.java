@@ -18,19 +18,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/**
- * 机器人推送
- *
- * @author k.y
- * @version Id: RobotPushManage.java, v 0.1 2018年12月21日 下午20:51 k.y Exp $
- */
 @Component
 public class RobotPushProducer {
 
     @Autowired
     private RedisTemplate redisTemplate;
 
-    /**延时队列操作*/
     @Autowired
     private DelayQueueHandle delayQueueHandle;
 
@@ -79,7 +72,6 @@ public class RobotPushProducer {
                 }
             }
 
-            //抛出异常
             throw new RobotSystemException(e, ErrorCodeEnum.ROBOT_PUSH_INIT_SYS);
         }
     }

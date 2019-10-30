@@ -20,12 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * 机器人水池配置管理实现
- *
- * @author k.y
- * @version Id: AccountPoolManageImpl.java, v 0.1 2019年02月28日 下午17:50 k.y Exp $
- */
 @RestController
 @Slf4j
 public class AccountPoolManageImpl implements AccountPoolManage {
@@ -33,7 +27,6 @@ public class AccountPoolManageImpl implements AccountPoolManage {
     @Autowired
     private BizOpCenterServiceTemplateImpl bizOpCenterServiceTemplate;
 
-    /**资金池管理*/
     @Autowired
     private AccountPoolManageRepository accountPoolManageRepository;
 

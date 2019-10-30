@@ -10,12 +10,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * 事务链模板
- *
- * @author k.y
- * @version Id: TransactionTemplate.java, v 0.1 2018年11月09日 下午10:45 k.y Exp $
- */
 @Component
 @Slf4j
 public class RtTransactionTemplate {
@@ -23,11 +17,6 @@ public class RtTransactionTemplate {
     @Autowired
     private TransactionTemplate transactionTemplate;
 
-    /**
-     * 事务链
-     *
-     * @param callback
-     */
     public void doTransaction(final RobotTransactionCallback callback) {
 
         //MDC.put("txID", "txID-" + String.valueOf(generator.next()));
@@ -41,17 +30,17 @@ public class RtTransactionTemplate {
 
                 } catch (RobotBizException e) {
 
-                    LogUtil.error(e,"业务异常,事务回滚");
+                    LogUtil.error(e,"biz exception then transaction is rollback !");
                     status.setRollbackOnly();
                     throw e;
                 } catch (RobotSystemException e) {
 
-                    LogUtil.error(e,"系统异常,事务回滚");
+                    LogUtil.error(e,"system exception then transaction is rollback !");
                     status.setRollbackOnly();
                     throw e;
                 } catch (Exception e) {
 
-                    LogUtil.error(e,"未知异常,事务回滚");
+                    LogUtil.error(e,"unknown exception then transaction is rollback !");
                     status.setRollbackOnly();
                     throw e;
                 }

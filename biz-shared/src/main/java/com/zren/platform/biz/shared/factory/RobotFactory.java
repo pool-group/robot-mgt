@@ -10,22 +10,10 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Robot Factory
- *
- * @author k.y
- * @version Id: RobotFactory.java, v 0.1 2019年05月03日 下午20:07 k.y Exp $
- */
 @Component
 @Slf4j
 public class RobotFactory {
 
-    /**
-     * Creating Robots
-     *
-     * @param count Number of robots
-     * @return
-     */
     public List<RobotInfoPO> create(int count){
 
         List<RobotInfoPO> robotInfoPOList= Lists.newArrayList();
@@ -33,8 +21,8 @@ public class RobotFactory {
             RobotInfoPO po=new RobotInfoPO();
             po.setId(null);
             po.setUserId(DataUtil.createNineSequenceUid());
-            po.setBatchId((long) 0);
-            po.setStatus(String.valueOf(0));
+            po.setBatchId(DataUtil.createSequenceUid());
+            po.setStatus(String.valueOf(1));
             po.setDateTime(new Date());
             robotInfoPOList.add(po);
         }

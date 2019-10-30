@@ -156,11 +156,7 @@ public class ZJHPlayCard extends BasePlayCard{
             switch (f_type) {
                 case THREE_SAME:
                     //直接比大小
-                    if (f_biggestCard > t_biggestCard) {
-                        flag=true;
-                    } else {
-                        flag=false;
-                    }
+                    flag= f_biggestCard > t_biggestCard;
                     break;
                 case SAME_COLOR_TOGETHER:
 //                    顺金先比牌点再比花色
@@ -186,11 +182,7 @@ public class ZJHPlayCard extends BasePlayCard{
                     } else if (f_biggestCard < t_biggestCard) {
                         flag=false;
                     } else {//大小相同
-                        if (f_color.getPriority() > t_color.getPriority()) {
-                            flag=true;
-                        } else {
-                            flag=false;
-                        }
+                        flag= f_color.getPriority() > t_color.getPriority();
                     }
                     break;
                 case TWO_SAME:
@@ -214,11 +206,7 @@ public class ZJHPlayCard extends BasePlayCard{
                         } else {
                             f_color = getCardColorByOrig(f_card, f_single);
                             t_color = getCardColorByOrig(t_card, t_single);
-                            if (f_color.getPriority() > t_color.getPriority()) {
-                                flag=true;
-                            } else {
-                                flag=false;
-                            }
+                            flag= f_color.getPriority() > t_color.getPriority();
                         }
                     }
                     break;
@@ -237,10 +225,7 @@ public class ZJHPlayCard extends BasePlayCard{
 
     private static boolean isBiggest(int[] f_card) {
         int big = genOriginalNum(f_card[0]);
-        if (big == ZJH_SINGLE_BIG) {
-            return true;
-        }
-        return false;
+        return big == ZJH_SINGLE_BIG;
     }
 
     private static CardColorEnum getCardColorByOrig(int[] f_card, int f_single) {

@@ -12,12 +12,6 @@ import com.zren.platform.common.util.exception.RobotSystemException;
 import com.zren.platform.common.util.tool.LogUtil;
 import org.springframework.stereotype.Service;
 
-/**
- * 内部统一服务模板
- *
- * @author k.y
- * @version Id: BizOpCenterServiceTemplateImpl.java, v 0.1 2018年11月02日 下午14:59 k.y Exp $
- */
 @Service
 public class BizOpCenterServiceTemplateImpl extends BaseTemplate implements BizOpCenterServiceTemplate {
 
@@ -31,22 +25,16 @@ public class BizOpCenterServiceTemplateImpl extends BaseTemplate implements BizO
         try {
             LogUtil.info(">>> biz service start..");
 
-            //1.检查参数
             bizCallback.preCheck();
 
-            //2.初始化参数及上下文
             bizCallback.initContent(context);
 
-            //3.请求参数
             LogUtil.info(String.format(" Input ...Parameter [ %s ]  ",null==context.getInputModel()?null:context.getInputModel().toString()));
 
-            //4.业务处理
             bizCallback.doProcess(context);
 
-            //5.后置处理
             bizCallback.afterProcess(context);
 
-            //6.设置结果，默认true
             result.setResultObj(context.getOutputModel());
             result.setSuccess(true);
 
@@ -70,8 +58,6 @@ public class BizOpCenterServiceTemplateImpl extends BaseTemplate implements BizO
         } finally {
 
             fillSummaryLogModel(result, context);
-
-            //7.清理上下文
 
             LogUtil.info("<<< biz service end..");
         }

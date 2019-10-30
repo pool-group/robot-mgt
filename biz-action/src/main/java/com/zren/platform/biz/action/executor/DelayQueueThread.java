@@ -8,12 +8,6 @@ import com.zren.platform.common.util.tool.LogUtil;
 
 import java.util.concurrent.DelayQueue;
 
-/**
- * 获取延时消息线程
- *
- * @author k.y
- * @version Id: DelayQueueThread.java, v 0.1 2018年11月26日 下午10:27 k.y Exp $
- */
 public class DelayQueueThread implements Runnable{
 
     private DelayQueue<Message> queue;

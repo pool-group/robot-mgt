@@ -19,19 +19,10 @@ import java.util.Map;
 @Component
 public class RocketMqConfig {
 
-    /**
-     * 消费mq配置
-     */
     private Map<String, RocketMqProp> consumer = new HashMap<>();
 
-    /**
-     * 消息生产mq配置
-     */
     private Map<String, RocketMqProp> producer = new HashMap<>();
 
-    /**
-     * 获取配置中的topic
-     */
     public String getTopicByProducer(String gameAlias) {
         if (producer.containsKey(gameAlias)) {
             return producer.get(gameAlias).getTopic();

@@ -21,6 +21,11 @@
 
     <dependencies>
 
+<!--        <dependency>-->
+<!--            <groupId>com.zren.platform</groupId>-->
+<!--            <artifactId>game-center-api</artifactId>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>com.zren.platform.common-util</groupId>
             <artifactId>common-util</artifactId>
@@ -54,12 +59,6 @@
             <groupId>com.zren.platform.core-rule</groupId>
             <artifactId>core-rule</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <!--Redis-->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
         </dependency>
 
         <dependency>

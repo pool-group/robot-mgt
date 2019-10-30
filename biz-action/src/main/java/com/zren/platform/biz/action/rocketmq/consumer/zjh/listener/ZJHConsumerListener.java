@@ -6,7 +6,7 @@ import com.zren.platform.biz.shared.callback.AbstractOpCallback;
 import com.zren.platform.biz.shared.context.EngineContext;
 import com.zren.platform.biz.shared.template.impl.BizOpCenterServiceTemplateImpl;
 import com.zren.platform.common.service.facade.result.RobotBaseResult;
-import com.zren.platform.common.util.Tuple.Tuple4x;
+import com.zren.platform.common.util.tuple.Tuple4x;
 import com.zren.platform.common.util.enums.ErrorCodeEnum;
 import com.zren.platform.common.util.enums.MessageBindBeanEnum;
 import com.zren.platform.common.util.exception.RobotBizException;
@@ -28,16 +28,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * 炸金花消费者监听
- *
- * @author k.y
- * @version Id: ConsumerListener.java, v 0.1 2018年11月22日 下午16:47 k.y Exp $
- */
 @RequiredArgsConstructor
 @Service(value = "zjhListener")
 public class ZJHConsumerListener implements MessageListenerConcurrently {
@@ -49,7 +44,6 @@ public class ZJHConsumerListener implements MessageListenerConcurrently {
 
     private final BizOpCenterServiceTemplateImpl bizOpCenterServiceTemplate;
 
-    /**Redis Client*/
     @Autowired
     private RedissonClient redisClient;
 
@@ -64,14 +58,7 @@ public class ZJHConsumerListener implements MessageListenerConcurrently {
         }
     }
 
-    /**
-     * 接受MQ消息
-     *
-     * @param msgs
-     * @param context
-     * @return
-     */
-    public RobotBaseResult onMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) throws InterruptedException{
+    public RobotBaseResult onMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
             return bizOpCenterServiceTemplate.doBizProcess(new AbstractOpCallback<String,Void>(){
 
             @Override
@@ -88,12 +75,12 @@ public class ZJHConsumerListener implements MessageListenerConcurrently {
                     RLock lock=redisClient.getLock(tuple4x._1().get()+":lock:"+message.getMsgId());
                     boolean isLocked = false;
 
-                    LogUtil.info(String.format(" zjhListener consumeMessage: topic=[ %s ], tags=[ %s ], body=[ %s ],msgId=[ %s ] ", message.getTopic(), message.getTags(), new String(message.getBody(), Charset.forName("utf-8")),message.getMsgId()));
-                    msg = new String(message.getBody(), Charset.forName("utf-8"));
+                    LogUtil.info(String.format(" zjhListener consumeMessage: topic=[ %s ], tags=[ %s ], body=[ %s ],msgId=[ %s ] ", message.getTopic(), message.getTags(), new String(message.getBody(), StandardCharsets.UTF_8),message.getMsgId()));
+                    msg = new String(message.getBody(), StandardCharsets.UTF_8);
                     JSONObject object = null;
                         isLocked = lock.tryLock(0, 30, TimeUnit.SECONDS);
                         if(isLocked){
-                            LogUtil.info(String.format(" [ %s ]消息处理获取锁成功：isTrue=[ %s ], 耗时：time= [ %s ]ms, gameId=[ %s ], roomId=[ %s ], tableId=[ %s ],",message.getMsgId(),isLocked,System.currentTimeMillis()-startTime,Integer.valueOf(tuple4x._1().get().toString()),Integer.valueOf(tuple4x._2().get().toString()),(String)tuple4x._3().get()));
+                            LogUtil.info(String.format(" [ %s ]消息处理获取锁成功：isTrue=[ %s ], 耗时：time= [ %s ]ms, gameId=[ %s ], roomId=[ %s ], tableId=[ %s ],",message.getMsgId(),isLocked,System.currentTimeMillis()-startTime,Integer.valueOf(tuple4x._1().get().toString()),Integer.valueOf(tuple4x._2().get().toString()),tuple4x._3().get()));
                             if(StringUtils.contains(msg,"账户缓存")){
                                 throw new RobotBizException(ErrorCodeEnum.MQ_MESSAGE_ILLEGAL);
                             }
@@ -103,20 +90,24 @@ public class ZJHConsumerListener implements MessageListenerConcurrently {
                             int code = object.getIntValue("code");
                             String tag=MqTagUtil.getTagIn(Integer.valueOf(tuple4x._1().get().toString()),Integer.valueOf(tuple4x._2().get().toString()),(String)tuple4x._4().get());
                             Set<String> set=redisTemplate.opsForSet().members(RedisCommon.getUserRedisKey(RedisCommon.ROBOTINFO,Integer.valueOf(tuple4x._1().get().toString()),Integer.valueOf(tuple4x._2().get().toString()),(String)tuple4x._3().get()));
-                            String beanName= MessageBindBeanEnum.getName(code);
-                            if(code==MessageBindBeanEnum.ZJH_JOIN_TABLE_HANDLE.getCode()){
-                                System.out.println();
+
+                            if(!StringUtils.equals(selfUserId,userId)&&set.contains(userId)&&code==MessageBindBeanEnum.ZJH_CURRENT_HANDLE.getCode()){
+                                code=MessageBindBeanEnum.ZJH_OTHER_BOT_LOOK_HANDLE.getCode();
                             }
+                            String beanName= MessageBindBeanEnum.getName(code);
                             if(org.apache.commons.lang3.StringUtils.isNotBlank(beanName)){
                                 if((StringUtils.equals(selfUserId,userId)&&set.contains(userId) && (
                                            code==MessageBindBeanEnum.ZJH_LEAVE_TABLE_HANDLE.getCode()
+                                        || code==MessageBindBeanEnum.ZJH_SNAPSHOT_HANDLE.getCode()
                                         || code==MessageBindBeanEnum.ZJH_CHANGE_TABLE_HANDLE.getCode()
                                         || code==MessageBindBeanEnum.ZJH_DRIVE_OUT_HANDLE.getCode()
                                         || code==MessageBindBeanEnum.ZJH_GIVE_UP_HANDLE.getCode()
                                         || code==MessageBindBeanEnum.ZJH_LOOK_HANDLE.getCode()
                                         || code==MessageBindBeanEnum.ZJH_JOIN_TABLE_HANDLE.getCode()
                                         || code==MessageBindBeanEnum.ZJH_CURRENT_HANDLE.getCode()))
-                                        ||(set.contains(userId) && code==MessageBindBeanEnum.ZJH_GAME_OVER_HANDLE.getCode())){
+                                        ||((set.contains(userId) && code==MessageBindBeanEnum.ZJH_GAME_OVER_HANDLE.getCode())
+                                        || (set.contains(userId) && code==MessageBindBeanEnum.ZJH_OTHER_BOT_LOOK_HANDLE.getCode()))
+                                ){
                                     BaseEventHandle baseHandle = applicationContextUtil.getInstance().getBean(beanName, BaseEventHandle.class);
                                     if(!org.springframework.util.StringUtils.isEmpty(baseHandle)){
                                         baseHandle.excute(tag,object,tuple4x);
@@ -133,7 +124,7 @@ public class ZJHConsumerListener implements MessageListenerConcurrently {
             }
         });
     }
-//tag_clean_balance_cache
+
     private Tuple4x<Integer,Integer,String,String> getRoomConfigByTag(String tag) {
         int count=StringUtils.countMatches(tag,"_");
         if(count==3){

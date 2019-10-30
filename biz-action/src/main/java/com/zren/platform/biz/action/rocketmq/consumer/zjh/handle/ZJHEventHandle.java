@@ -16,8 +16,8 @@ import com.zren.platform.common.service.facade.dto.in.robotInfo.RobotDestroyInpu
 import com.zren.platform.common.service.facade.dto.out.zjh.ZjhStrategyInfoDTO;
 import com.zren.platform.common.service.facade.result.RobotBaseResult;
 import com.zren.platform.common.util.enums.ErrorCodeEnum;
+import com.zren.platform.common.util.enums.MessageBindBeanEnum;
 import com.zren.platform.common.util.exception.RobotSystemException;
-import com.zren.platform.common.util.log.Log;
 import com.zren.platform.common.util.tool.DataUtil;
 import com.zren.platform.common.util.tool.LogUtil;
 import com.zren.platform.common.util.tool.RedisCommon;
@@ -35,12 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * 炸金花event基类
- *
- * @author k.y
- * @version Id: ZJHEventHandle.java, v 0.1 2018年12月18日 下午16:14 k.y Exp $
- */
 @Component
 public abstract class ZJHEventHandle extends BaseEventHandle {
 
@@ -53,12 +47,6 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
     @Autowired
     private RobotBizPush robotBizPush;
 
-    /**
-     * 初始化上下文参数
-     *
-     * @param context
-     * @param object
-     */
     public void assembleContext(ZJHPlayerContext context,JSONObject object){
         context.setAction(false);
         context.setCode(object.getInteger("code"));
@@ -77,14 +65,9 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
         context.setBrights(object.getString("brights"));
         context.setClientId(object.getLong("clientId"));
         context.setAgentId(object.getLong("agentId"));
+        context.setTarget(object.getString("target"));
     }
 
-    /**
-     * 初始化上下文策略参数
-     *
-     * @param context
-     * @param lst
-     */
     public void assembleContextStrategy(ZJHPlayerContext context,List<Map<String,Object>> lst){
 
         //初始化user信息上下文
@@ -110,12 +93,6 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
         LogUtil.info(String.format(" code=[ %s ], userId=[ %s ] 初始化机器人策略上下文参数完成: [ %s ]",context.getCode(),context.getCurrentId(),context));
     }
 
-    /**
-     * 初始化user信息上下文
-     *
-     * @param context
-     * @param lst
-     */
     public void initContextByUserList(ZJHPlayerContext context,List<Map<String,Object>> lst){
         List<String> compareList=new ArrayList<>();
         for(Map map:lst){
@@ -127,58 +104,53 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
                 context.setTotalBetScore(Double.valueOf(map.get("totalBetScore").toString()));//当前机器人下注总分
                 context.setBalanceScore(new BigDecimal(map.get("balanceScore").toString()));//当前机器人余额分
                 context.setBrand(map.get("brand").toString());//平台名称
+                context.setFeatures((byte) ((Integer)map.get("features")).intValue());
                 context.setAgentId(888888L);
                 context.setClientId(999999L);
                 JSONArray jsonArray= (JSONArray) map.get("cards");
                 context.setCards(new int[]{(Integer) jsonArray.get(0),(Integer) jsonArray.get(1),(Integer) jsonArray.get(2)});
             }
-            if(!compareList.contains(context.getCurrentId())&&!map.get("userId").equals(context.getCurrentId())&&("WAIT".equals(map.get("state"))||"THINKING".equals(map.get("state")))){
+            if(!compareList.contains(context.getCurrentId())&&!map.get("userId").equals(context.getCurrentId())&&("WAIT".equals(map.get("state"))||"THINKING".equals(map.get("state"))||"START".equals(map.get("state")))){
                 compareList.add((String) map.get("userId"));
+            }
+            if (null!=context.getTarget()&&context.getTarget().equals(map.get("userId"))){
+                context.setRealPlayerId((String) map.get("userId"));
+                context.setPlayerTotalBetScore(Double.valueOf(map.get("totalBetScore").toString()));
             }
         }
         context.setCompareList(compareList);
-        //随机取一个玩家或机器人比牌
         if(compareList.size()>0){
             int r=DataUtil.randomNumber(0,context.getCompareList().size(),1)[0];
             context.setVsRandomUserId(compareList.get(r));
         }
     }
 
-    /**
-     * 刷新不同行为思考时间，目前暂不提供支持配置化
-     *
-     * @param context
-     */
     public void refreshThinkingTime(ZJHPlayerContext context){
 
-        //是否具有敏捷思维
         if(super.isHitRate(context.getQuickThinkingRate())){
-            context.setBetThinkingTime(Long.valueOf(DataUtil.randomNumber(1,3,1)[0])*1000);
+            context.setBetThinkingTime(Long.valueOf(DataUtil.randomNumber(2,3,1)[0])*1000);
         }else {
             context.setBetThinkingTime(Long.valueOf(DataUtil.randomNumber(2,6,1)[0])*1000);
         }
-
         if(super.isHitRate(context.getAddBetRate())){
             String[] dark=context.getDark().split(",");
             String[] brights=context.getBrights().split(",");
             if(context.isCurrentIsLooked()){
                 for(int i=brights.length-1;i>=0;i--){
-                    if(Double.valueOf(brights[i]).compareTo(context.getCurrentShouldBetScore())==1&&super.isHitRate(strategyRuleExcute.findAddBetStrategy(context.getRobotry(),i))){
+                    if(Double.valueOf(brights[i]).compareTo(context.getCurrentShouldBetScore())==1&&super.isHitRate(context.getAddBetRate())){
                         context.setCurrentShouldBetScore(Double.valueOf(brights[i]));
                         context.setBaseBet(Double.valueOf(brights[i])/2);
                     }
                 }
             }else {
                 for(int i=dark.length-1;i>=0;i--){
-                    if(Double.valueOf(dark[i]).compareTo(context.getCurrentShouldBetScore())==1&&super.isHitRate(strategyRuleExcute.findAddBetStrategy(context.getRobotry(),i))){
+                    if(Double.valueOf(dark[i]).compareTo(context.getCurrentShouldBetScore())==1&&super.isHitRate(context.getAddBetRate())){
                         context.setCurrentShouldBetScore(Double.valueOf(dark[i]));
                         context.setBaseBet(Double.valueOf(dark[i]));
                     }
                 }
             }
-            LogUtil.info(Log.AI_STRATEGY.LOG,String.format("useId=[ %s ], key=[ %s ], realCard= [ %s ], round=[ %s ], addRate=[ %s ], robot action：adding....",context.getCurrentId(),context.getStrategyKey(), context.getRealCard(),1+context.getRound(), context.getAddBetRate()));
-        }else {
-            LogUtil.info(Log.AI_STRATEGY.LOG,String.format("useId=[ %s ], key=[ %s ], realCard= [ %s ], round=[ %s ], addRate=[ %s ], robot action：following....",context.getCurrentId(),context.getStrategyKey(), context.getRealCard(),1+context.getRound(), context.getAddBetRate()));
+            context.setCurrentIsAddbet(true);
         }
 
     }
@@ -203,10 +175,6 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
                     throw new RobotSystemException(result.getErrorContext().fetchCurrentError().getDescription(),ErrorCodeEnum.ROBOT_DESTROY_SYS);
                 }
                 LogUtil.info(String.format(" code=[ %s ], 机器人 [ %s ] 成功被系统回收, info=[ %s ]",context.getCode(),dto.getUserId(),dto));
-
-//                //销毁桌台机器人座位
-//                robotTableFeign.robotLeaveTable(req.getGameId(),req.getRoomId(),req.getTableId(),1);
-//                LogUtil.info(String.format(" code=[ %s ], 桌台 [ %s ], 机器人 [ %s ] 的座位号消毁成功",context.getCode(),req.getTableId(),context.getCurrentId()));
 
                 //3. redis清除该机器人信息
                 redisTemplate.opsForSet().remove(robotInfoKey,context.getCurrentId());
@@ -246,13 +214,6 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
 
     }
 
-
-    /**
-     * 更新机器人账变
-     *
-     * @param context
-     * @param req
-     */
     public void updateRobotAccount(ZJHPlayerContext context, RoomConfigReq req){
 
         RobotDestroyInputModelDTO dto=new RobotDestroyInputModelDTO();
@@ -284,44 +245,8 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
         }
     }
 
-    /**
-     * 向该桌台推送机器人
-     *
-     * @param context
-     * @param req
-     * @param realPlayerCount
-     */
-    public void robotProcess(ZJHPlayerContext context, RoomConfigReq req,int realPlayerCount){
-        //6. 桌台只剩1-2个真实玩家,向该桌台推送机器人
-//        if(realPlayerCount>0 && context.getPlayerList().size()<3){
-//            int count=DataUtil.randomNumber(1,4-context.getPlayerList().size()+1,1)[0];
-//            LogUtil.info(String.format(" code=[ %s ], 桌台 [ %s ] 总玩家数: [ %s ], 其中机器人数: [ %s ], 推送机器人执行中.., 请求参数: gameId=[ %s ],roomId=[ %s ],tableId=[ %s ],counts=[ %s ] ",context.getCode(),req.getTableId(),context.getPlayerList().size(),(context.getPlayerList().size()-realPlayerCount),req.getGameId(),req.getRoomId(),req.getTableId(),count));
-//            robotTableFeign.robotJoinTable(req.getGameId(),req.getRoomId(),req.getTableId(),count);
-//            AIRobotInitInputModelDTO initInputModelDTO=new AIRobotInitInputModelDTO();
-//            try {
-//                initInputModelDTO.setBrand(context.getBrand());
-//                initInputModelDTO.setGameId(req.getGameId());
-//                initInputModelDTO.setRoomId(req.getRoomId());
-//                initInputModelDTO.setTableId(req.getTableId());
-//                initInputModelDTO.setMinAmount(BigDecimal.valueOf(context.getMinEntry()));
-//                initInputModelDTO.setCount(count);
-//                initInputModelDTO.setAgentId(null==context.getAgentId()?88888:context.getAgentId());
-//                initInputModelDTO.setClientId(null==context.getClientId()?88889:context.getClientId());
-//                LogUtil.info(String.format(" code=[ %s ], 桌台 [ %s ], 推送中,initInputModelDTO=[ %s ]",context.getCode(), req.getTableId(),initInputModelDTO));
-//                robotBizPush.createRobot(initInputModelDTO);
-//            } catch (Exception e) {
-//                //TCC事务补偿，销毁桌台机器人占位
-//                robotTableFeign.robotLeaveTable(req.getGameId(),req.getRoomId(),req.getTableId(),count);
-//                LogUtil.error(e,String.format(" code=[ %s ], 桌台 [ %s ], 申请推送机器人失败",context.getCode(), req.getTableId()));
-//            }
-//        }
-    }
+    public void robotProcess(ZJHPlayerContext context, RoomConfigReq req,int realPlayerCount){}
 
-    /**
-     * 刷新上下文和缓存
-     *
-     * @param context
-     */
     public ZjhStrategyInfoDTO refreshContext(ZJHPlayerContext context){
         ZjhStrategyEntity zse = new ZjhStrategyEntity();
         zse.setPableCount(context.getCompareList().size()+1);
@@ -336,6 +261,18 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
         zse.setDark(context.getDark());
         zse.setCards(context.getCards());
         zse.setRound(context.getRound()+1);
+        zse.setBrand(context.getBrand());
+        zse.setGameId(context.getGameId());
+        zse.setRoomId(context.getRoomId());
+        zse.setRealPlayerId(context.getRealPlayerId());
+        zse.setRobotry(context.getRobotry());
+        zse.setPlayerTotalBetScore(context.getPlayerTotalBetScore());
+
+        //容错处理，临时解决游戏逻辑传值player机器人信息重复BUG
+        if (context.getCode().compareTo(MessageBindBeanEnum.ZJH_LOOK_HANDLE.getCode())==0){
+            zse.setIsRlook(true);
+        }
+
         ZjhStrategyInfoDTO zjhStrategyInfoDTO=strategyRuleExcute.refreshZjhAIStrategy(zse);
         context.setLookRate(zjhStrategyInfoDTO.getLookRate());
         context.setLookToGiveUpRate(zjhStrategyInfoDTO.getLookToGiveUpRate());
@@ -352,26 +289,14 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
         return zjhStrategyInfoDTO;
     }
 
-    /**
-     * 孤注一掷
-     *
-     * @param req
-     * @param userId
-     */
     public void sendAloneMessage(RoomConfigReq req, String userId){
         AloneMessageMqModel model=new AloneMessageMqModel();
         model.setCode(1009);
         model.setUserId(userId);
-        sendDelayMessage(req,model,Long.valueOf(DataUtil.randomNumber(1,8,1)[0])*1000);
+        sendDelayMessage(req,model,Long.valueOf(DataUtil.randomNumber(1,5,1)[0])*1000);
         LogUtil.info(String.format(" 机器人 [ %s ], 发起 [ %s ] 孤注一掷",userId,model.getCode()));
     }
 
-    /**
-     * 弃牌
-     *
-     * @param req
-     * @param userId
-     */
     public void sendGiveUpMessage(RoomConfigReq req,String userId,Long giveUpMillisecond){
         GiveUpMessageMqModel model=new GiveUpMessageMqModel();
         model.setCode(1005);
@@ -381,12 +306,6 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
         LogUtil.info(String.format(" 机器人 [ %s ], 发起 [ %s ]ms后 [ %s ] 弃牌",userId,giveUpMillisecond,model.getCode()));
     }
 
-    /**
-     * 看牌
-     *
-     * @param req
-     * @param userId
-     */
     public void sendLookMessage(RoomConfigReq req,String userId){
         LookMessageMqModel model=new LookMessageMqModel();
         model.setCode(1004);
@@ -396,27 +315,15 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
         LogUtil.info(String.format(" 机器人 [ %s ], 发起 [ %s ]ms后 [ %s ] 看牌",userId,millisecond,model.getCode()));
     }
 
-    /**
-     * 比牌
-     *
-     * @param req
-     * @param userId
-     */
     public void sendVsMessage(RoomConfigReq req,String userId,String compareUserId){
         CompareToMessageMqModel model=new CompareToMessageMqModel();
         model.setCode(1006);
         model.setUserId(userId);
         model.setI(compareUserId);
-        sendDelayMessage(req,model,Long.valueOf(DataUtil.randomNumber(1,7,1)[0])*1000);
+        sendDelayMessage(req,model,Long.valueOf(DataUtil.randomNumber(1,6,1)[0])*1000);
         LogUtil.info(String.format(" 机器人 [ %s ], 发起 [ %s ] 比牌",userId,model.getCode()));
     }
 
-    /**
-     * 下注、跟注
-     *
-     * @param req
-     * @param userId
-     */
     public void sendFollowMessage(RoomConfigReq req,String userId,ZJHPlayerContext context){
         FollowMessageMqModel model=new FollowMessageMqModel();
         model.setCode(1003);
@@ -427,12 +334,6 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
         LogUtil.info(String.format(" 机器人 [ %s ], 发起 [ %s ] 下注、跟注",userId,model.getCode()));
     }
 
-    /**
-     * 机器人准备
-     *
-     * @param req
-     * @param userId
-     */
     public void sendAlreadyMessage(RoomConfigReq req,String userId,Long areadyMillisecond){
         AlreadyMessageMqModel model=new AlreadyMessageMqModel();
         model.setUserId(userId);
@@ -441,16 +342,10 @@ public abstract class ZJHEventHandle extends BaseEventHandle {
         LogUtil.info(String.format(" 机器人 [ %s ], 发起 [ %s ] 准备",userId,model.getCode()));
     }
 
-    /**
-     * 离开桌台
-     *
-     * @param req
-     * @param userId
-     */
     public void sendLeaveMessage(RoomConfigReq req,String userId){
         LeaveMessageMqModel model=new LeaveMessageMqModel();
         model.setCode(1008);
         model.setUserId(userId);
-        super.sendDelayMessage(req, model,Long.valueOf(DataUtil.randomNumber(1,8,1)[0])*1000);
+        super.sendDelayMessage(req, model,Long.valueOf(DataUtil.randomNumber(1,5,1)[0])*1000);
     }
 }

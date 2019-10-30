@@ -27,12 +27,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.zren.platform.common-util</groupId>
-            <artifactId>common-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.zren.platform.core-rule</groupId>
             <artifactId>core-rule</artifactId>
             <version>${project.version}</version>
@@ -47,6 +41,11 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
         </dependency>
 
     </dependencies>

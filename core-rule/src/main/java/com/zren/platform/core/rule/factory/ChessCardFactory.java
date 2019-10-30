@@ -9,12 +9,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 不同游戏卡牌生成工厂
- *
- * @author k.y
- * @version Id: ChessCardFactory.java, v 0.1 2018年11月19日 下午13:55 k.y Exp $
- */
 @Component
 public class ChessCardFactory {
 

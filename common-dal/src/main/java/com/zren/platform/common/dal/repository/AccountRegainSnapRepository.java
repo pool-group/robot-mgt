@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Transactional
 @Repository
-public interface AccountRegainSnapRepository extends JpaRepository<AccountRegainSnapInfoPO, Long> {
+public interface AccountRegainSnapRepository extends JpaRepository<AccountRegainSnapInfoPO, Integer> {
 
     /**
      * 查询未消费的异常账变信息

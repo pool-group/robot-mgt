@@ -53,6 +53,41 @@ public class AccountPoolPO {
     @Column(nullable = false, unique = true)
     private Byte controlType;
 
+    @Column(nullable = false, unique = true)
+    private BigDecimal denyPipAmount;
+
+//    @Column(nullable = false, unique = true)
+    @Transient
+    private BigDecimal positiveTotalbetAlarm=BigDecimal.ZERO;
+
+    @Column(nullable = false, unique = true)
+    private BigDecimal positiveGrayRate;
+    
+    @Column(nullable = false, unique = true)
+    private Integer positiveGrayTime;
+
+//    @Column(nullable = false, unique = true)
+    @Transient
+    private BigDecimal reverseTotalbetAlarm=BigDecimal.ZERO;
+
+    @Column(nullable = false, unique = true)
+    private BigDecimal reverseGrayRate;
+
+    @Column(nullable = false, unique = true)
+    private Integer reverseGrayTime;
+
+    @Column(nullable = false, unique = true)
+    private BigDecimal reverseStage;
+
+    @Column(nullable = false, unique = true)
+    private BigDecimal reverseRate;
+
+    @Column(nullable = false, unique = true)
+    private BigDecimal positiveRate;
+
+    @Column(nullable = false, unique = true)
+    private Byte grayAble;
+
     /**RTP是否启用*/
     @Column(nullable = false, unique = true)
     private Byte rtpAble;
@@ -60,6 +95,10 @@ public class AccountPoolPO {
     /**预设RTP值*/
     @Column(nullable = false, unique = true)
     private BigDecimal rtpValue;
+
+    /**总投入初始值/天*/
+    @Column(nullable = false, unique = true)
+    private BigDecimal rtpInputInit;
 
     /**RTP作弊几率初始值*/
     @Column(nullable = false, unique = true)

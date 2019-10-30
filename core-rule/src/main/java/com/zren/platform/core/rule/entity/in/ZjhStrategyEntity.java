@@ -49,4 +49,19 @@ public class ZjhStrategyEntity {
 
     private String realCard;
 
+    /**平台*/
+    private String brand;
+
+    /**游戏ID*/
+    private Integer gameId;
+
+    /**房间ID*/
+    private Integer roomId;
+
+    private String realPlayerId;
+
+    private Double playerTotalBetScore;
+
+    private Integer robotry;
+
 }

@@ -1,36 +1,100 @@
 druid:
-  type: com.alibaba.druid.pool.DruidDataSource
   master:
-    url: jdbc:mysql://192.168.1.93:3306/gcenter?useUnicode=true&characterEncoding=utf8&useSSL=false
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://192.168.211.160:3306/gcenter?useUnicode=true&characterEncoding=utf8&useSSL=false
     driver-class-name: com.mysql.jdbc.Driver
     username: game_center_app
     password: Jxinternet@1234
+    #配置监控统计拦截的 filters,去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat, wall
+    #最大活跃数
+    maxActive: 200
+    #最小活跃数
+    minIdle: 10
+    #初始化数量
+    initialSize: 10
+    #最大连接等待超时时间
+    maxWait: 60000
+    keepAlive: true
+    #打开PSCache，并且指定每个连接PSCache的大小
+    #poolPreparedStatements: true
+    #maxPoolPreparedStatementPerConnectionSize: 20
+    #通过connectionProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 1
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    #是否自动回收超时连接
+    removeAbandoned: true
+    #泄露的连接可以被删除的超时值， 单位秒应设置为应用中查询执行最长的时间,单位为秒
+    removeAbandonedTimeout: 300
+    #关闭abanded连接时输出错误日志
+    logAbandoned: true
   slave:
-    url: jdbc:mysql://192.168.1.93:3306/gcenter?useUnicode=true&characterEncoding=utf8&useSSL=false
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://192.168.211.160:3306/gcenter?useUnicode=true&characterEncoding=utf8&useSSL=false
     driver-class-name: com.mysql.jdbc.Driver
     username: game_center_app
     password: Jxinternet@1234
+    #配置监控统计拦截的 filters,去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat, wall
+    #最大活跃数
+    maxActive: 200
+    #最小活跃数
+    minIdle: 10
+    #初始化数量
+    initialSize: 10
+    #最大连接等待超时时间
+    maxWait: 60000
+    keepAlive: true
+    #打开PSCache，并且指定每个连接PSCache的大小
+    #poolPreparedStatements: true
+    #maxPoolPreparedStatementPerConnectionSize: 20
+    #通过connectionProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 1
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    #是否自动回收超时连接
+    removeAbandoned: true
+    #泄露的连接可以被删除的超时值， 单位秒应设置为应用中查询执行最长的时间,单位为秒
+    removeAbandonedTimeout: 300
+    #关闭abanded连接时输出错误日志
+    logAbandoned: true
+  monitor:
+    username: druid
+    password: UxxhvCXjo0Qc+E1drG3l8QMVGM1MRmqvss1iJWJFPwEvM/DBm7R0Qw7roUW5HXFXbs4Wf7v19+kjYoYEGMoHcA==
+    allow: 192.168.11.117
+    deny: ""
+    publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJxwPLehC/t0zZri5EE9tjylqMC1hdJIY36MBW+wB7fB+ZoT39TRN3kzJUItTSsjBRXrw7PwYk6PTFw7hEhfD0kCAwEAAQ==
 
 spring:
   redis:
-    host: 192.168.1.57
+    host: 192.168.211.159
     port: 6379
-    password: ""
     database: 12
+    timeout: 5s
+    password:
 
 com:
   zren:
     rocket:
       producer:
         zjh:
-          addr: 192.168.1.157:9876;192.168.1.158:9876
+          addr: 192.168.211.141:9876;192.168.211.143:9876
           group: consumerGroup
           topic: cg_zjh_in
           adapt: defaultAdapt
           handler: defaultHandler
       consumer:
         zjh:
-          addr: 192.168.1.157:9876;192.168.1.158:9876
+          addr: 192.168.211.141:9876;192.168.211.143:9876
           group: producerGroup
           topic: cg_zjh_out
           listener: zjhListener

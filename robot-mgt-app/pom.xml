@@ -8,9 +8,15 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
+  <name>robot-mgt-app</name>
+
   <artifactId>game-robot-mgt-app</artifactId>
 
   <dependencies>
+    <dependency>
+      <groupId>com.zren.platform</groupId>
+      <artifactId>game-center-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.zren.platform.biz-service-impl</groupId>
@@ -70,6 +76,10 @@
       <artifactId>isky-apollo-client</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.zren.platform</groupId>
+      <artifactId>zpoke-common-service-facade</artifactId>
+    </dependency>
   </dependencies>
 
 

@@ -14,17 +14,12 @@ import com.zren.platform.common.util.exception.RobotSystemException;
 import com.zren.platform.common.util.tool.ApplicationContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
-/**
- * 規則策略实现
- *
- * @author k.y
- * @version Id: RobotRuleManageServiceImpl.java, v 0.1 2018年12月11日 下午17:02 k.y Exp $
- */
 @RestController
 @Slf4j
 public class AIRobotRuleManageImpl implements AIRobotRuleManage {
@@ -32,28 +27,24 @@ public class AIRobotRuleManageImpl implements AIRobotRuleManage {
     @Autowired
     private BizOpCenterServiceTemplateImpl bizOpCenterServiceTemplate;
 
-    /**規則策略*/
     @Autowired
     private AIRobotRuleManageServiceImpl aIRobotRuleManageServiceImpl;
 
-    /**上下文*/
     @Autowired
     private ApplicationContextUtil applicationContextUtil;
 
-    /**
-     * 获取规则策略
-     *
-     * @param ruleInputModelDTO  平台  游戏类型  房间ID  机器人ID
-     * @return
-     */
     @Override
     public RobotBaseResult createRule(@RequestBody RuleInputModelDTO ruleInputModelDTO) {
+        return createRuleProcess(ruleInputModelDTO,true);
+    }
+
+    public RobotBaseResult createRuleProcess(RuleInputModelDTO ruleInputModelDTO,Boolean bool){
         return bizOpCenterServiceTemplate.doBizProcess(new AbstractOpCallback<RuleInputModelDTO,RuleOutputModelDTO>(){
 
             @Override
-            public void doProcess(EngineContext<RuleInputModelDTO, RuleOutputModelDTO> context) throws InterruptedException {
+            public void doProcess(EngineContext<RuleInputModelDTO, RuleOutputModelDTO> context){
 
-                RobotBaseResult<RuleOutputModelDTO> ruleResult=aIRobotRuleManageServiceImpl.createRule(ruleInputModelDTO);
+                RobotBaseResult<RuleOutputModelDTO> ruleResult=aIRobotRuleManageServiceImpl.createRule(ruleInputModelDTO,bool);
                 if(ruleResult.isSuccess()==false){
                     throw new RobotSystemException(ruleResult.getErrorContext().fetchCurrentError().getDescription(),ErrorCodeEnum.MODULE_INVOKE_ERROR);
                 }
@@ -68,4 +59,5 @@ public class AIRobotRuleManageImpl implements AIRobotRuleManage {
             }
         });
     }
+
 }

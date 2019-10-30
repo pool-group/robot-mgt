@@ -21,32 +21,22 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * AI机器人管理实现
- *
- * @author k.y
- * @version Id: AIRobotManageServiceImpl.java, v 0.1 2018年11月23日 下午17:36 k.y Exp $
- */
 @Component
 public class RobotBizPush {
 
     @Autowired
     private BizOpCenterServiceTemplateImpl bizOpCenterServiceTemplate;
 
-    /**机器人初始化*/
     @Autowired
     private RobotManageServiceImpl robotManageServiceImpl;
 
-    /**事务模板*/
     @Autowired
     private RtTransactionTemplate rtTransactionTemplate;
 
     @Autowired
-    /**规则策略*/
     private AIRobotRuleManageServiceImpl aIRobotRuleManageServiceImpl;
 
     @Autowired
-    /**机器人推送*/
     private RobotPushProducer robotPushProducer;
 
     public void createRobot(AIRobotInitInputModelDTO robotInitInputModelDTO) {
@@ -68,22 +58,19 @@ public class RobotBizPush {
                         throw new RobotSystemException(result.getErrorContext().fetchCurrentError().getDescription(),ErrorCodeEnum.MODULE_INVOKE_ERROR);
                     }
 
-                    //提取机器人ID
                     List<Long> userIdlist=lst.stream().mapToLong(RobotInfoDTO::getUserId).boxed().collect(Collectors.toList());
-                    //初始化机器人策略
                     RuleInputModelDTO ruleDto=new RuleInputModelDTO();
                     ruleDto.setBrand(robotInitInputModelDTO.getBrand());
                     ruleDto.setGameId(robotInitInputModelDTO.getGameId());
                     ruleDto.setRoomId(robotInitInputModelDTO.getRoomId());
                     ruleDto.setTableId(robotInitInputModelDTO.getTableId());
                     ruleDto.setUserIdlist(userIdlist);
-                    RobotBaseResult<RuleOutputModelDTO> ruleResult=aIRobotRuleManageServiceImpl.createRule(ruleDto);
+                    RobotBaseResult<RuleOutputModelDTO> ruleResult=aIRobotRuleManageServiceImpl.createRule(ruleDto,false);
                     if(ruleResult.isSuccess()==false){
                         throw new RobotSystemException(result.getErrorContext().fetchCurrentError().getDescription(),ErrorCodeEnum.MODULE_INVOKE_ERROR);
                     }
                     strategylist=ruleResult.getResultObj().getStrategylist();
 
-                    //推送机器人
                     robotPushProducer.push(lst,strategylist,robotInitInputModelDTO);
                 }
             });

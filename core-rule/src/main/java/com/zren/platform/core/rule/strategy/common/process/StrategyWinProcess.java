@@ -15,30 +15,16 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-/**
- * 机器人胜负策略
- *
- * @author k.y
- * @version Id: StrategyMain.java, v 0.1 2018年11月17日 下午16:07 k.y Exp $
- */
 @Component
 public class StrategyWinProcess {
 
-    /**CronRule表达式工厂*/
     @Autowired
     private CronRuleFactory cronRuleFactory;
 
-    /**概率事件工厂*/
     @Autowired
     private ProbabilisticFactory probabilisticFactory;
 
 
-    /**
-     * 牌局胜负策略
-     *
-     * @param ar
-     * @param chessContext
-     */
     public void excute(AlgorithmRuleEntity ar,ChessContext chessContext){
 
         Byte controlType=ar.getControlType();
@@ -76,14 +62,6 @@ public class StrategyWinProcess {
         }
     }
 
-    /**
-     * 默认规则
-     *     说明：默认规则兜底，及表达式配置出现问题，上下限控制
-     *
-     * @param ar
-     * @param rate
-     * @param chessContext
-     */
     public void defaultRateRule(AlgorithmRuleEntity ar,BigDecimal rate,ChessContext chessContext){
         if(ar.getGainLoss().compareTo(BigDecimal.valueOf(0))==-1&&(rate.abs()).compareTo(ar.getMaxLossRate())>=0){
             chessContext.setRobotry(StrategyEnums.WIN.getCode());
@@ -99,20 +77,10 @@ public class StrategyWinProcess {
         }
     }
 
-
-    /**
-     * 亏损态策略逻辑处理
-     *     说明：亏损态，计算的是触发作弊几率(结果=触发作弊几率+逻辑中随机得到最大牌几率)。
-     *
-     * @param ar
-     * @param chessContext
-     * @param cronRule
-     * @param rate
-     */
     public void handleGainLossMainRule(AlgorithmRuleEntity ar,ChessContext chessContext,String cronRule,BigDecimal rate){
         try {
             //检测Cron策略表达式有效性并解析
-            BigDecimal rateResult=cronRuleFactory.resolve(cronRule,rate);
+            BigDecimal rateResult= CronRuleFactory.resolve(cronRule,rate);
             LogUtil.info(Log.CRON.LOG,String.format(" handleLossMainRule -> Cron rule is pass ..  , Rate event is: rateResult=[ %s ]",rateResult.toString()));
             //调用概率工厂,启用概率事件,通过概率获取结果[命中概率事件返回：1,否则：0]
             int isHit=probabilisticFactory.excute(rateResult);
@@ -135,22 +103,12 @@ public class StrategyWinProcess {
         }
     }
 
-
-    /**
-     * 盈利态策略逻辑处理
-     *     说明：盈利态，计算的是胜负几率(最终结果) ，好处：盈利态控制盈亏比较灵活，否则出现只能控制作弊的的概率，不能降低胜率放水的情况。
-     *
-     * @param ar
-     * @param chessContext
-     * @param cronRule
-     * @param rate
-     */
     public void handleGainMainRule(AlgorithmRuleEntity ar,ChessContext chessContext,String cronRule,BigDecimal rate){
         try {
             //检测Cron策略表达式有效性并解析
             //调用概率工厂,启用概率事件,通过概率获取结果[命中概率事件返回：1,否则：0]
             int isHit=probabilisticFactory.excute(rate);
-            LogUtil.info(Log.RTP.LOG,String.format(" Rate Hit is: isHit=[ %s ], brand=[ %s ], gameId=[ %s ], roomId=[ %s ]",isHit==0?2:1,ar.getBrand(),ar.getGameId(),ar.getRoomId()));
+            LogUtil.info(Log.RTP.LOG,String.format(" Rate Hit is: isHit=[ %s ], rate=[ %s ], brand=[ %s ], gameId=[ %s ], roomId=[ %s ]",isHit==0?2:1,rate,ar.getBrand(),ar.getGameId(),ar.getRoomId()));
             if(isHit==1){
                 chessContext.setRobotry(StrategyEnums.WIN.getCode());
             }else {

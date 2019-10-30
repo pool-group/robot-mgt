@@ -16,17 +16,16 @@
   <modules>
     <module>biz-service-impl</module>
     <module>biz-shared</module>
-    <module>common-service-facade</module>
     <module>common-util</module>
     <module>common-dal</module>
     <module>robot-mgt-app</module>
     <module>core-rule</module>
     <module>biz-action</module>
+    <module>common-service-facade</module>
+    <module>common-service-integration</module>
   </modules>
 
   <name>robot-mgt</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -35,76 +34,67 @@
     <game-common.version>1.0-SNAPSHOT</game-common.version>
   </properties>
 
-      <dependencies>
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
 
-        <dependency>
-          <groupId>org.projectlombok</groupId>
-          <artifactId>lombok</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
 
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-test</artifactId>
-          <scope>test</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
 
-        <dependency>
-          <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
 
-        <dependency>
-          <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-consul-discovery</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
 
-        <dependency>
-          <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-sleuth</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+    </dependency>
 
-        <dependency>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-lang3</artifactId>
-          <version>3.7</version>
-        </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-sleuth</artifactId>
+    </dependency>
 
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.7</version>
+    </dependency>
 
-      </dependencies>
+    <dependency>
+      <groupId>io.projectreactor</groupId>
+      <artifactId>reactor-core</artifactId>
+      <version>3.2.11.RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+  </dependencies>
 
   <dependencyManagement>
     <dependencies>
-
       <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-jpa</artifactId>
-        <version>2.0.4.RELEASE</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework.data</groupId>
-        <artifactId>spring-data-jpa</artifactId>
-        <version>2.0.4.RELEASE</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework.data</groupId>
-        <artifactId>spring-data-commons</artifactId>
-        <version>2.0.4.RELEASE</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.ctrip.framework.apollo</groupId>
-        <artifactId>apollo-client</artifactId>
-        <version>1.3.0</version>
+        <groupId>com.zren.platform</groupId>
+        <artifactId>game-center-api</artifactId>
+        <version>${game-common.version}</version>
       </dependency>
 
       <dependency>
@@ -125,13 +115,6 @@
         <version>19.0</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-openfeign</artifactId>
-        <version>2.0.0.RC1</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
       <!--druid 依赖-->
       <dependency>
         <groupId>com.alibaba</groupId>
@@ -151,6 +134,23 @@
         <version>1.0.13</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.zren.platform</groupId>
+        <artifactId>zpoke-common-service-facade</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.zren.platform</groupId>
+        <artifactId>zpoke-core-model</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>1.2.60</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

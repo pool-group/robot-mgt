@@ -8,12 +8,6 @@ import org.slf4j.Logger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * 机器人账变日志监控
- *
- * @author k.y
- * @version Id: RobotAccountMonitor.java, v 0.1 2019年01月10日 下午17:47 k.y Exp $
- */
 @Slf4j(topic = "account_monitor")
 public class RobotAccountMonitor {
 

@@ -34,10 +34,8 @@ public class GameRtpStatsPO {
     @Column(nullable = false, unique = true)
     private String tableName;
     @Column(nullable = false, unique = true)
-    /**当日总投注*/
     private BigDecimal totalInput;
     @Column(nullable = false, unique = true)
-    /**当日总盈亏额*/
     private BigDecimal totalPnl;
     @Column(nullable = false, unique = true)
     private Integer createDate;

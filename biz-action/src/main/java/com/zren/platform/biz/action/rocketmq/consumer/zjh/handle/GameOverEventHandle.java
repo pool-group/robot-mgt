@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zren.platform.biz.action.context.ZJHPlayerContext;
 import com.zren.platform.biz.action.enums.RobotEnum;
-import com.zren.platform.common.util.Tuple.Tuple4x;
+import com.zren.platform.common.util.tuple.Tuple4x;
 import com.zren.platform.common.util.tool.DataUtil;
 import com.zren.platform.common.util.tool.LogUtil;
 import com.zren.platform.common.util.tool.RedisCommon;
@@ -17,25 +17,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * 游戏结束 消息事件处理
- *
- * @author k.y
- * @version Id: GameOverHandle.java, v 0.1 2018年12月01日 下午16:52 k.y Exp $
- */
 @Component(value = "zjh_game_over_handle")
 public class GameOverEventHandle extends ZJHEventHandle {
 
     @Override
     public void excute(String tags, JSONObject object, Tuple4x tuple4x) {
 
-        //机器人逻辑状态上下文
         ZJHPlayerContext context =new ZJHPlayerContext();
-
         RoomConfigReq req=new RoomConfigReq(Integer.valueOf(tuple4x._1().get().toString()),Integer.valueOf(tuple4x._2().get().toString()),(String)tuple4x._3().get());
         context.setCurrentId((String) tuple4x._4().get());
 
-        List<Map<String,Object>> lst=(List) JSON.parseArray(object.getString("infoForRobots"), HashMap.class);//当前机器人台桌所有用户列表(包括机器人)
+        List<Map<String,Object>> lst=(List) JSON.parseArray(object.getString("infoForRobots"), HashMap.class);
         context.setMinEntry(object.getDouble("minEntry"));
         context.setBrand(object.getString("brand"));
         context.setCode(object.getInteger("code"));
@@ -62,7 +54,7 @@ public class GameOverEventHandle extends ZJHEventHandle {
 
         for (String userId : map.keySet()) {
             for(Map<String,Object> userMap:context.getPlayerList()){
-                if(userMap.get("userId").equals(userId)&&robotSet.contains(userId)){
+                if(userMap.get("userId").equals(userId)&&robotSet.contains(userId)&&userId.equals(context.getCurrentId())){
                     Integer i= super.redisForIncrement(req,userId,"leaveCount");
                     context.setCurrentId(userId);
                     context.setBalanceScore(new BigDecimal(userMap.get("balanceScore").toString()));
@@ -76,14 +68,11 @@ public class GameOverEventHandle extends ZJHEventHandle {
                      *      2.余额不足
                      *      3.桌台只剩下机器人
                      */
-                    //离开桌台
                     if(i<0/*||context.getBalanceScore().compareTo(BigDecimal.valueOf(context.getMinEntry()))<=0*/||robotCount==context.getPlayerList().size()){
                         LogUtil.info(String.format(" code=[ %s ], 桌台 [ %s ], 游戏结束: 机器人[ %s ]发起离开房间申请",context.getCode(),req.getTableId(),String.valueOf(userMap.get("userId"))));
                         super.sendLeaveMessage(req,userId);
-                    }
-                    //机器人准备
-                    else {
-                        Long areadyMillisecond=Long.valueOf(DataUtil.randomNumber(1,5,1)[0])*1000;
+                    }else {
+                        Long areadyMillisecond=Long.valueOf(DataUtil.randomNumber(4,6,1)[0])*1000;
                         super.sendAlreadyMessage(req,userId,areadyMillisecond);
                     }
                 }

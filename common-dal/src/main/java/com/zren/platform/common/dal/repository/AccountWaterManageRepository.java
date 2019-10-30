@@ -16,7 +16,7 @@ import java.util.List;
 
 @Transactional
 @Repository
-public interface AccountWaterManageRepository extends JpaRepository<AccountWaterPO, Long> {
+public interface AccountWaterManageRepository extends JpaRepository<AccountWaterPO, Integer> {
 
     /**
      * 查询当前批次所有账目流水

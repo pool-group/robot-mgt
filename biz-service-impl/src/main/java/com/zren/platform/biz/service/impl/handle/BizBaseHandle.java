@@ -6,12 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-/**
- * 业务handle基类
- *
- * @author k.y
- * @version Id: BizBaseHandle.java, v 0.1 2018年12月11日 下午17:20 k.y Exp $
- */
 @Component
 public abstract class BizBaseHandle {
 

@@ -147,6 +147,8 @@ public class ZJHStrategyFactory implements InitializingBean {
     }
 
     public Double findAddBetStrategy(Integer robotry,Integer index){
+        if(robotry>2)
+            robotry=2;
         if(null==ADD_BET_MODEL.get(WIN)
                 ||null==ADD_BET_MODEL.get(LOSS_MIN)
                 ||null==ADD_BET_MODEL.get(LOSS_MIDDLE)

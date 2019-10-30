@@ -6,12 +6,6 @@ import com.zren.platform.common.util.tool.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * RTP
- *
- * @author k.y
- * @version Id: GainLossServiceImpl.java, v 0.1 2019年02月26日 下午10:57 k.y Exp $
- */
 @Service
 public class GameRtpStatsServiceImpl {
 

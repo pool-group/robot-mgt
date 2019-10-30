@@ -8,7 +8,7 @@ import com.zren.platform.core.rule.entity.in.ZjhStrategyEntity;
 import com.zren.platform.core.rule.enums.CardTypeEnum;
 import com.zren.platform.core.rule.enums.RobotFeaturesEnum;
 import com.zren.platform.core.rule.strategy.common.BaseAIStrategyCentralNervous;
-import com.zren.platform.core.rule.strategy.common.BaseStrategy;
+import com.zren.platform.core.rule.strategy.common.BaseIntegration;
 import com.zren.platform.core.rule.strategy.common.InvokeExact;
 import com.zren.platform.core.rule.strategy.zjh.biz.ZJHPlayCard;
 
@@ -63,7 +63,7 @@ public interface AIStrategyRuleProcess extends BaseAIStrategyCentralNervous {
         CardTypeEnum cardType=analysisCardType(zse.getIsRlook(),zse.getCards());
         String cardKey=analysisCardKey(cardType,zse);
         Integer roundstr=zse.getRound().compareTo(2)>=0?2:1;
-        return cardType.toString()+ BaseStrategy.mark+cardKey+ BaseStrategy.mark+String.valueOf(roundstr);
+        return cardType.toString()+ BaseIntegration.mark+cardKey+ BaseIntegration.mark+roundstr;
     }
 
     default CardTypeEnum analysisCardType(Boolean bool,int[] cards){
@@ -171,7 +171,7 @@ public interface AIStrategyRuleProcess extends BaseAIStrategyCentralNervous {
         String[] brights=zse.getBrights().split(",");
         Double lastBetScore=zse.getLastBetScore();
         if(!zse.getIsPlook()){
-            if(lastBetScore.compareTo((double) 0)==1&&lastBetScore.compareTo(Double.valueOf(dark[0]))==-1)
+            if(lastBetScore.compareTo((double) 0)==0||(lastBetScore.compareTo((double) 0)==1&&lastBetScore.compareTo(Double.valueOf(dark[0]))==-1))
                 lastBetScore= Double.valueOf(dark[0]);
             for (int i=0;i<dark.length;i++){
                 if(Double.parseDouble(dark[i])==lastBetScore){
@@ -187,10 +187,13 @@ public interface AIStrategyRuleProcess extends BaseAIStrategyCentralNervous {
                         zse.setLevel(RobotFeaturesEnum.LEVEL_FOUR);
                     else
                         throw new RobotSystemException(String.format("dark.size=[ %s ], analysis dark is Exception!",dark.length));
+                    break;
+                }else{
+                    zse.setLevel(RobotFeaturesEnum.LEVEL_TWO);
                 }
             }
         }else {
-            if(lastBetScore.compareTo((double) 0)==1&&lastBetScore.compareTo(Double.valueOf(brights[0]))==-1)
+            if(lastBetScore.compareTo((double) 0)==0||(lastBetScore.compareTo((double) 0)==1&&lastBetScore.compareTo(Double.valueOf(brights[0]))==-1))
                 lastBetScore= Double.valueOf(brights[0]);
             for (int i=0;i<brights.length;i++){
                 if(Double.parseDouble(brights[i])==lastBetScore){
@@ -206,6 +209,9 @@ public interface AIStrategyRuleProcess extends BaseAIStrategyCentralNervous {
                         zse.setLevel(RobotFeaturesEnum.LEVEL_FOUR);
                     else
                         throw new RobotSystemException(String.format("brights.size=[ %s ], analysis brights is Exception!",brights.length));
+                    break;
+                }else{
+                    zse.setLevel(RobotFeaturesEnum.LEVEL_THREE);
                 }
             }
         }

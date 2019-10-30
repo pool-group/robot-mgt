@@ -2,9 +2,10 @@ package com.zren.platform.core.rule.factory;
 
 import com.google.common.collect.Maps;
 import com.zren.platform.common.dal.po.ZjhStrategyPO;
-import com.zren.platform.common.util.Tuple.Tuple2x;
+import com.zren.platform.common.util.tuple.Tuple2x;
 import com.zren.platform.common.util.tool.LogUtil;
-import com.zren.platform.core.rule.strategy.common.BaseStrategy;
+import com.zren.platform.core.rule.entity.in.ZjhStrategyEntity;
+import com.zren.platform.core.rule.strategy.common.BaseIntegration;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @version Id: ZJHStrategyFactory.java, v 0.1 2018年12月17日 下午14:56 k.y Exp $
  */
 @Component
-public class ZJHAIStrategyFactory extends BaseStrategy implements InitializingBean {
+public class ZJHAIStrategyFactory extends BaseIntegration implements InitializingBean {
 
 
     /**
@@ -47,19 +48,22 @@ public class ZJHAIStrategyFactory extends BaseStrategy implements InitializingBe
     private AtomicBoolean                     A_BOOL                                           =      new AtomicBoolean(true);
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         refreshAIActionOriginal();
         if(null!=AI_ACTION_MODEL)
             AI_ACTION_AVAILABILITY_MODEL.putAll(AI_ACTION_MODEL);
     }
 
     private void refreshAIActionOriginal(){
-        super.initcontainer(AI_ACTION_MODEL);
-        A_BOOL.compareAndSet(false,true);
+        try {
+            super.initcontainer(AI_ACTION_MODEL);
+        } finally {
+            A_BOOL.compareAndSet(false,true);
+        }
         LogUtil.info("AI Policy container parameters refreshed success!");
     }
 
-    public ZjhStrategyPO initAIActionOriginal(String key,Boolean boolx){
+    public ZjhStrategyPO initAIActionOriginal(String key, Boolean boolx, ZjhStrategyEntity zse){
         LogUtil.info(String.format("ai strategy request parameter: key=[ %s ]",key));
         if(!boolx&&System.currentTimeMillis()>(Long) AI_ACTION_MODEL.get(key)._1().get()&&A_BOOL.compareAndSet(true,false)){
             refreshAIActionOriginal();
@@ -69,6 +73,7 @@ public class ZJHAIStrategyFactory extends BaseStrategy implements InitializingBe
             tuple2x=AI_ACTION_AVAILABILITY_MODEL.get(key);
         else
             tuple2x=AI_ACTION_MODEL.get(key);
+        addDenyMember(zse);
         return (ZjhStrategyPO) tuple2x._2().get();
     }
 }

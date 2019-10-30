@@ -26,7 +26,7 @@ public abstract class AbstractOpCallback<P, R> {
      *
      * @param context 上下文
      */
-    public abstract void doProcess(EngineContext<P, R> context) throws InterruptedException;
+    public abstract void doProcess(EngineContext<P, R> context);
 
     /**
      * 业务[后置处理]

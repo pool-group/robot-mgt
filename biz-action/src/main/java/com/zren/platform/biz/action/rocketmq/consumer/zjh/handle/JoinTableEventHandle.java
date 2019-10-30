@@ -2,18 +2,12 @@ package com.zren.platform.biz.action.rocketmq.consumer.zjh.handle;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zren.platform.biz.action.context.ZJHPlayerContext;
-import com.zren.platform.common.util.Tuple.Tuple4x;
+import com.zren.platform.common.util.tuple.Tuple4x;
 import com.zren.platform.common.util.tool.DataUtil;
 import com.zren.platform.common.util.tool.LogUtil;
 import com.zren.platform.intercomm.dto.RoomConfigReq;
 import org.springframework.stereotype.Component;
 
-/**
- * 机器人加入桌台监听
- *
- * @author k.y
- * @version Id: GameOverHandle.java, v 0.1 2018年12月01日 下午16:52 k.y Exp $
- */
 @Component(value = "zjh_join_table_handle")
 public class JoinTableEventHandle extends ZJHEventHandle {
 

@@ -25,8 +25,8 @@ public class GameRtpStatsRepository {
 
     public GameRtpStatsPO queryRtpResult(String brand, Integer gameId,Integer roomId){
 
-        String dateStr=DateUtil.getNowDateFormatToString("yyyyMMdd");
-        dateStr=dateStr.substring(2,dateStr.length());
+        String dateStr= DateUtil.getNowDateFormatToString("yyyyMMdd");
+        dateStr=dateStr.substring(2);
         Integer dateInt=Integer.valueOf(dateStr);
         String sql="SELECT * FROM game_rtp_stats gt WHERE gt.brand='"+brand+"' AND gt.game_id="+gameId+" AND gt.room_id="+roomId+" AND gt.create_date="+dateInt+" ";
         Query query = entityManager.createNativeQuery(sql,GameRtpStatsPO.class);

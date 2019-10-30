@@ -14,12 +14,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-/**
- * @author k.y
- * @version Id: RocketProducer.java, v 0.1 2018年11月22日 下午16:32 k.y Exp $
- */
 @Slf4j
 @Component
 public class RocketProducer extends Producer<DefaultMQProducer> {
@@ -51,7 +48,7 @@ public class RocketProducer extends Producer<DefaultMQProducer> {
                 return mqs.get(code);
             }
         }, tag);
-        LogUtil.info(String.format(" rocketProducer.sendMessage: topic=[ %s ], tags=[ %s ], body=[ %s ], sendResult=[ %s ] ", topic, tag, new String(bytes, Charset.forName("utf-8")),sendResult));
+        LogUtil.info(String.format(" rocketProducer.sendMessage: topic=[ %s ], tags=[ %s ], body=[ %s ], sendResult=[ %s ] ", topic, tag, new String(bytes, StandardCharsets.UTF_8),sendResult));
     }
 
     @Override

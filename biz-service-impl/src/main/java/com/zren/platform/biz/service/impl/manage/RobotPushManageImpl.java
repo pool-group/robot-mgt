@@ -9,15 +9,10 @@ import com.zren.platform.common.service.facade.dto.in.robotInfo.AIRobotInitInput
 import com.zren.platform.common.service.facade.result.RobotBaseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * AI机器人管理实现
- *
- * @author k.y
- * @version Id: AIRobotManageServiceImpl.java, v 0.1 2018年11月23日 下午17:36 k.y Exp $
- */
 @RestController
 @Slf4j
 public class RobotPushManageImpl implements RobotPushManage {
@@ -38,7 +33,7 @@ public class RobotPushManageImpl implements RobotPushManage {
             }
 
             @Override
-            public void doProcess(EngineContext<AIRobotInitInputModelDTO, Void> context) throws InterruptedException {
+            public void doProcess(EngineContext<AIRobotInitInputModelDTO, Void> context) {
 
                 robotBizPush.createRobot(robotInitInputModelDTO);
             }
