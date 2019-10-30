@@ -1,0 +1,36 @@
+druid:
+  type: com.alibaba.druid.pool.DruidDataSource
+  master:
+    url: jdbc:mysql://192.168.1.93:3306/gcenter?useUnicode=true&characterEncoding=utf8&useSSL=false
+    driver-class-name: com.mysql.jdbc.Driver
+    username: game_center_app
+    password: Jxinternet@1234
+  slave:
+    url: jdbc:mysql://192.168.1.93:3306/gcenter?useUnicode=true&characterEncoding=utf8&useSSL=false
+    driver-class-name: com.mysql.jdbc.Driver
+    username: game_center_app
+    password: Jxinternet@1234
+
+spring:
+  redis:
+    host: 192.168.1.57
+    port: 6379
+    password: ""
+    database: 12
+
+com:
+  zren:
+    rocket:
+      producer:
+        zjh:
+          addr: 192.168.1.157:9876;192.168.1.158:9876
+          group: consumerGroup
+          topic: cg_zjh_in
+          adapt: defaultAdapt
+          handler: defaultHandler
+      consumer:
+        zjh:
+          addr: 192.168.1.157:9876;192.168.1.158:9876
+          group: producerGroup
+          topic: cg_zjh_out
+          listener: zjhListener

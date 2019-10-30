@@ -1,0 +1,24 @@
+node {
+   def mvnHome
+   stage('Preparation') {
+       git 'git@gitlab.tiwo.io:backend-card-games/robot-mgt.git'
+      mvnHome = tool 'M3'
+   }
+   stage('Release') {
+       def pom = readMavenPom file: 'pom.xml'
+       def releaseVersion = params.releaseVersion
+       def version = pom.version.replace("1.0-SNAPSHOT", "${releaseVersion}")
+       sh "${mvnHome}/bin/mvn -DreleaseVersion=${version} -DdevelopmentVersion=${pom.version} -DpushChanges=false -DlocalCheckout=true -DpreparationGoals=initialize -Dresume=false" +
+               " -Dgame-common.version=${gameCommonVersion}" +
+               //" -pl .,order-data-rest-api" +
+               " release:prepare release:perform -B"
+       sh "git push --set-upstream origin master"
+       sh "git push origin ${pom.artifactId}-${version}"
+    }
+
+    //stage('SonarQube analysis') {
+    //    withSonarQubeEnv('SonarQube'){
+    //        sh "/home/jenkins/sonar-scanner-3.0.0.702/bin/sonar-scanner"
+    //    }
+    //}
+}
